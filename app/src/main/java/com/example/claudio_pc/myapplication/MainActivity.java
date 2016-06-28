@@ -1,6 +1,5 @@
 package com.example.claudio_pc.myapplication;
 
-
 import android.app.Activity;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
@@ -16,14 +15,16 @@ public class MainActivity extends Activity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        glView = new GLSurfaceView(this);
-        glView.setRenderer(new SimleRenderer());
+
+        // Create a GLSurfaceView instance and set it
+        // as the ContentView for this Activity.
+        glView = new MyGlSurfaceView(this);
         setContentView(glView);
     }
 
     @Override
     protected void onResume(){
-        super.onPause();
+        super.onResume();
         glView.onResume();
     }
 
