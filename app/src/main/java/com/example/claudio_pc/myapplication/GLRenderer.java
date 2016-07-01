@@ -10,15 +10,31 @@ import javax.microedition.khronos.opengles.GL10;
 class GlRenderer implements GLSurfaceView.Renderer {
     private static Context context;
     private Cube cube;
+    private Vehicle vehicle;
+    private MapGenerator mapGenerator;
     private float rotationAngle;
 
-    public void GlRenderer(Context c){
+    public GlRenderer(Context c){
         context = c;
         cube = new Cube();
+        vehicle = new Vehicle();
+        mapGenerator = new MapGenerator();
     }
 
     public void onSurfaceCreated(GL10 gl, EGLConfig configuracionEGL) {
-        gl.glEnable(GL10.GL_DEPTH_TEST);
+        // Load the texture for the square
+        vehicle.loadGLTexture(gl, this.context);
+        mapGenerator.loadGLTexture(gl, this.context);
+
+        gl.glEnable(GL10.GL_TEXTURE_2D);			//Enable Texture Mapping ( NEW )
+        gl.glShadeModel(GL10.GL_SMOOTH); 			//Enable Smooth Shading
+        gl.glClearColor(0.0f, 0.0f, 0.0f, 0.5f); 	//Black Background
+        gl.glClearDepthf(1.0f); 					//Depth Buffer Setup
+        gl.glEnable(GL10.GL_DEPTH_TEST); 			//Enables Depth Testing
+        gl.glDepthFunc(GL10.GL_LEQUAL); 			//The Type Of Depth Testing To Do
+
+        //Really Nice Perspective Calculations
+        gl.glHint(GL10.GL_PERSPECTIVE_CORRECTION_HINT, GL10.GL_NICEST);
     }
 
     public void onSurfaceChanged(GL10 gl, int width, int height) {
@@ -41,12 +57,70 @@ class GlRenderer implements GLSurfaceView.Renderer {
     public void onDrawFrame(GL10 gl){
         gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
         // Replace the current matrix with the identity matrix.
-        gl.glLoadIdentity();
-        gl.glTranslatef(0.0f, 0.0f, -6.0f);
+        //gl.glLoadIdentity();
+
+        /*gl.glTranslatef(0.0f, 0.0f, -6.0f);
         gl.glScalef(0.8f, 0.8f, 0.8f);
         gl.glRotatef(rotationAngle, 1.0f, 1.0f, 1.0f);
         cube.draw(gl);
-        rotationAngle -= 0.4f;
+        rotationAngle -= 0.4f;*/
+
+        gl.glLoadIdentity();
+        gl.glTranslatef(vehicle.x, getY(), -6.0f);
+        gl.glScalef(0.8f, 0.8f, 0.8f);
+        gl.glRotatef(getAngleRotate(), 0.0f, 0.0f, 1.0f);
+        vehicle.draw(gl);
+
+        gl.glLoadIdentity();
+        gl.glTranslatef(0.0f, -2.0f, -6.0f);
+        gl.glScalef(0.6f, 0.6f, 0.6f);
+        mapGenerator.draw(gl);
+    }
+
+    public volatile float mAngle;
+
+    public float getAngle() {
+        return mAngle;
+    }
+
+    public void setAngle(float angle) {
+        mAngle = angle;
+    }
+
+    public String rotate;
+    public float angleRotate;
+
+    public String getRotate(){
+        return rotate;
+    }
+    public void setRotate(String _rotate){
+        rotate = _rotate;
+    }
+    public float getAngleRotate(){
+        if (rotate == null)
+            return 0;
+
+        if(rotate.equals("LEFT")){
+            angleRotate += 10;
+        }else if(rotate.equals("RIGHT")){
+            angleRotate += -10;
+        }
+        return angleRotate;
+    }
+
+    public String move;
+    public float posX;
+    public float posY;
+    public void setX(float x){ posX = x; }
+    public float getX(){ return posX; }
+    public void setY(float y){ posY = y; }
+    public float getY(){
+        if(!vehicle.validateColition()) {
+            vehicle.y -= 0.05;
+            posY = vehicle.y - 0.05f;
+            return posY;
+        }
+        return vehicle.y;
     }
 
 }

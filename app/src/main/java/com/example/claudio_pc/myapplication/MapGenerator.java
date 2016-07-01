@@ -10,21 +10,16 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import javax.microedition.khronos.opengles.GL10;
 
-public class Vehicle {
-    private int type = 0;
-    public float x = -3.0f;
-    public float y = 2.0f;
-    private int height = 100;
-    private int width = 100;
-    private int angle = 0;
+public class MapGenerator {
 
     private FloatBuffer vertexBuffer;	// buffer holding the vertices
 
     private float vertices[] = {
-            -1.0f, -1.0f,  0.0f,		// V1 - bottom left
-            -1.0f,  1.0f,  0.0f,		// V2 - top left
-            1.0f, -1.0f,  0.0f,		    // V3 - bottom right
-            1.0f,  1.0f,  0.0f			// V4 - top right
+            -1.0f, -0.5f,  0.0f,		// V1 - bottom left
+            -1.0f,  0.5f,  0.0f,		// V2 - top left
+            1.0f, -0.5f,  0.0f,		    // V3 - bottom right
+            1.0f,  0.5f,  0.0f			// V4 - top right
+
     };
 
     private FloatBuffer textureBuffer;	// buffer holding the texture coordinates
@@ -33,10 +28,15 @@ public class Vehicle {
             0.0f, 1.0f,		// top left		(V2)
             0.0f, 0.0f,		// bottom left	(V1)
             1.0f, 1.0f,		// top right	(V4)
-            1.0f, 0.0f		// bottom right	(V3)
+            1.0f, 0.0f,		// bottom right	(V3)
+
+            1.0f, 2.0f,		// top left		(V4)
+            1.0f, 1.0f,		// bottom left	(V1)
+            2.0f, 2.0f,		// top right	(V4)
+            1.0f, 1.0f		// bottom right	(V3)
     };
 
-    public Vehicle(){
+    public MapGenerator(){
         ByteBuffer byteBuffer = ByteBuffer.allocateDirect(vertices.length * 4);
         byteBuffer.order(ByteOrder.nativeOrder());
 
@@ -112,12 +112,6 @@ public class Vehicle {
 
     private Bitmap getResourceBMP(Context c){
         return BitmapFactory.decodeResource(c.getResources(), R.mipmap.ic_launcher) ;
-    }
-
-    public boolean validateColition(){
-        if(y <= -1.05f)
-            return true;
-        return false;
     }
 
 }
