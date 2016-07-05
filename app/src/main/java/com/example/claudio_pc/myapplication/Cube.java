@@ -1,8 +1,11 @@
 package com.example.claudio_pc.myapplication;
 
+import android.content.Context;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
+import java.util.List;
 
 import javax.microedition.khronos.opengles.GL10;
 
@@ -10,18 +13,10 @@ public class Cube {
     private FloatBuffer vertexBuffer;
     private ByteBuffer drawListBuffer;
     private FloatBuffer colorBuffer;
+    private LoadOBJ loadOBJ;
 
     // Coordinates for vertices
-    static float cubeCoords[] = {
-            -1.0f, -1.0f,  1.0f,  // vertex 0 (x0, y0, z0)
-            1.0f, -1.0f,  1.0f,  // vertex 1 (x1, y1, z1)
-            1.0f,  1.0f,  1.0f,  // vertex 2 (x2, y2, z2)
-            -1.0f,  1.0f,  1.0f,  // vertex 3 (x3, y3, z3)
-            -1.0f, -1.0f, -1.0f,  // and so on...
-            1.0f, -1.0f, -1.0f,
-            1.0f,  1.0f, -1.0f,
-            -1.0f,  1.0f, -1.0f
-    };
+    static float[] cubeCoords = null;
     // Color definition
     private float colors[] = {
             1.0f, 0.0f, 0.0f, 1.0f, // red for vertex 0
@@ -43,7 +38,13 @@ public class Cube {
             0, 4, 1, 4, 1, 5
     };
 
-    public Cube() {
+    public Cube(Context c) {
+        loadOBJ = new LoadOBJ(c.getResources().openRawResource(R.raw.iron_man));
+       List<Float> list = LoadOBJ.getObjectVertex();
+        cubeCoords = new float[list.size()];
+        for (int i = 0; i < list.size(); i++)
+            cubeCoords[i] = list.get(i).floatValue();
+
         ByteBuffer byteBuffer = ByteBuffer.allocateDirect(cubeCoords.length * 4);
         byteBuffer.order(ByteOrder.nativeOrder());
 

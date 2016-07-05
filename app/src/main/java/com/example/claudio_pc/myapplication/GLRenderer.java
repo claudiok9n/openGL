@@ -16,15 +16,15 @@ class GlRenderer implements GLSurfaceView.Renderer {
 
     public GlRenderer(Context c){
         context = c;
-        cube = new Cube();
-        vehicle = new Vehicle();
-        mapGenerator = new MapGenerator();
+        cube = new Cube(c);
+        //vehicle = new Vehicle();
+        //mapGenerator = new MapGenerator();
     }
 
     public void onSurfaceCreated(GL10 gl, EGLConfig configuracionEGL) {
         // Load the texture for the square
-        vehicle.loadGLTexture(gl, this.context);
-        mapGenerator.loadGLTexture(gl, this.context);
+        //vehicle.loadGLTexture(gl, this.context);
+        //mapGenerator.loadGLTexture(gl, this.context);
 
         gl.glEnable(GL10.GL_TEXTURE_2D);			//Enable Texture Mapping ( NEW )
         gl.glShadeModel(GL10.GL_SMOOTH); 			//Enable Smooth Shading
@@ -57,15 +57,15 @@ class GlRenderer implements GLSurfaceView.Renderer {
     public void onDrawFrame(GL10 gl){
         gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
         // Replace the current matrix with the identity matrix.
-        //gl.glLoadIdentity();
+        gl.glLoadIdentity();
 
-        /*gl.glTranslatef(0.0f, 0.0f, -6.0f);
+        gl.glTranslatef(0.0f, 0.0f, -6.0f);
         gl.glScalef(0.8f, 0.8f, 0.8f);
         gl.glRotatef(rotationAngle, 1.0f, 1.0f, 1.0f);
         cube.draw(gl);
-        rotationAngle -= 0.4f;*/
+        rotationAngle -= 0.4f;
 
-        gl.glLoadIdentity();
+        /*gl.glLoadIdentity();
         gl.glTranslatef(vehicle.x, getY(), -6.0f);
         gl.glScalef(0.8f, 0.8f, 0.8f);
         gl.glRotatef(getAngleRotate(), 0.0f, 0.0f, 1.0f);
@@ -74,7 +74,7 @@ class GlRenderer implements GLSurfaceView.Renderer {
         gl.glLoadIdentity();
         gl.glTranslatef(0.0f, -2.0f, -6.0f);
         gl.glScalef(0.6f, 0.6f, 0.6f);
-        mapGenerator.draw(gl);
+        mapGenerator.draw(gl);*/
     }
 
     public volatile float mAngle;
