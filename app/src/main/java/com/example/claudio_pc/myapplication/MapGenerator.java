@@ -1,117 +1,81 @@
 package com.example.claudio_pc.myapplication;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.opengl.GLUtils;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
+import java.util.List;
+
 import javax.microedition.khronos.opengles.GL10;
 
 public class MapGenerator {
+    private FloatBuffer vertexBuffer;
+    private ByteBuffer drawListBuffer;
+    private FloatBuffer colorBuffer;
+    private LoadOBJ loadOBJ;
 
-    private FloatBuffer vertexBuffer;	// buffer holding the vertices
-
-    private float vertices[] = {
-            -1.0f, -0.5f,  0.0f,		// V1 - bottom left
-            -1.0f,  0.5f,  0.0f,		// V2 - top left
-            1.0f, -0.5f,  0.0f,		    // V3 - bottom right
-            1.0f,  0.5f,  0.0f			// V4 - top right
-
+    // Coordinates for vertices
+    static float[] vertexCoords = null;
+    // Color definition
+    private float colors[] = {
+            1.0f, 0.0f, 0.0f, 1.0f, // red for vertex 0
+            0.0f, 1.0f, 0.0f, 1.0f, // gree for vertex 1
+            0.0f, 0.0f, 1.0f, 1.0f, // blue for vertex 2
+            1.0f, 1.0f, 0.0f, 1.0f, // yellow for vertex 3
+            1.0f, 1.0f, 0.0f, 1.0f, // and so on...
+            0.0f, 0.0f, 1.0f, 1.0f,
+            0.0f, 1.0f, 0.0f, 1.0f,
+            1.0f, 0.0f, 0.0f, 1.0f
+    };
+    // Drawing order of vertexCoords[]
+    private byte drawOrder[] = {
+            0, 1, 3, 1, 3, 2,
+            1, 2, 6, 1, 6, 5,
+            0, 3, 7, 0, 7, 4,
+            4, 7, 6, 4, 6, 5,
+            3, 7, 2, 7, 2, 6,
+            0, 4, 1, 4, 1, 5
     };
 
-    private FloatBuffer textureBuffer;	// buffer holding the texture coordinates
-    private float texture[] = {
-            // Mapping coordinates for the vertices
-            0.0f, 1.0f,		// top left		(V2)
-            0.0f, 0.0f,		// bottom left	(V1)
-            1.0f, 1.0f,		// top right	(V4)
-            1.0f, 0.0f,		// bottom right	(V3)
+    public MapGenerator(Context c) {
+        loadOBJ = new LoadOBJ(c.getResources().openRawResource(R.raw.map), c.getResources().openRawResource(R.raw.map_mtl));
+        List<Float> list = LoadOBJ.getObjectVertex();
+        vertexCoords = new float[list.size()];
+        for (int i = 0; i < list.size(); i++)
+            vertexCoords[i] = list.get(i).floatValue();
 
-            1.0f, 2.0f,		// top left		(V4)
-            1.0f, 1.0f,		// bottom left	(V1)
-            2.0f, 2.0f,		// top right	(V4)
-            1.0f, 1.0f		// bottom right	(V3)
-    };
-
-    public MapGenerator(){
-        ByteBuffer byteBuffer = ByteBuffer.allocateDirect(vertices.length * 4);
+        ByteBuffer byteBuffer = ByteBuffer.allocateDirect(vertexCoords.length * 4);
         byteBuffer.order(ByteOrder.nativeOrder());
 
-        // allocates the memory from the byte buffer
         vertexBuffer = byteBuffer.asFloatBuffer();
-        // fill the vertexBuffer with the vertices
-        vertexBuffer.put(vertices);
-        // set the cursor position to the beginning of the buffer
+        vertexBuffer.put(vertexCoords);
         vertexBuffer.position(0);
 
-        createTexture();
+        byteBuffer = ByteBuffer.allocateDirect(colors.length * 4);
+        byteBuffer.order(ByteOrder.nativeOrder());
+        colorBuffer = byteBuffer.asFloatBuffer();
+        colorBuffer.put(colors);
+        colorBuffer.position(0);
+
+        drawListBuffer = ByteBuffer.allocateDirect(drawOrder.length);
+        drawListBuffer.put(drawOrder);
+        drawListBuffer.position(0);
     }
 
     public void draw(GL10 gl) {
-        // bind the previously generated texture
-        gl.glBindTexture(GL10.GL_TEXTURE_2D, textures[0]);
-
-        // Point to our buffers
+        // Enable vertex array buffer to be used during rendering
         gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
-        gl.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
-
-        // Set the face rotation
-        gl.glFrontFace(GL10.GL_CW);
-
-        // Point to our vertex buffer
+        // Tell openGL where the vertex array buffer is
         gl.glVertexPointer(3, GL10.GL_FLOAT, 0, vertexBuffer);
-        gl.glTexCoordPointer(2, GL10.GL_FLOAT, 0, textureBuffer);
+
+
+        // Enable color array buffer to be used during rendering
+        gl.glEnableClientState(GL10.GL_COLOR_ARRAY);
+        // Tell openGL where the color array buffer is
+        gl.glColorPointer(4, GL10.GL_FLOAT, 0, colorBuffer);
 
         // Draw the vertices as triangle strip
-        gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, vertices.length / 3);
-
-        //Disable the client state before leaving
-        gl.glDisableClientState(GL10.GL_VERTEX_ARRAY);
-        gl.glDisableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
+        gl.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, vertexCoords.length / 3);
     }
-
-    private void createTexture(){
-        ByteBuffer byteBuffer = ByteBuffer.allocateDirect(vertices.length * 4);
-        byteBuffer.order(ByteOrder.nativeOrder());
-        vertexBuffer = byteBuffer.asFloatBuffer();
-        vertexBuffer.put(vertices);
-        vertexBuffer.position(0);
-
-        byteBuffer = ByteBuffer.allocateDirect(texture.length * 4);
-        byteBuffer.order(ByteOrder.nativeOrder());
-        textureBuffer = byteBuffer.asFloatBuffer();
-        textureBuffer.put(texture);
-        textureBuffer.position(0);
-    }
-
-    /** The texture pointer */
-    private int[] textures = new int[1];
-
-    public void loadGLTexture(GL10 gl, Context context) {
-        // loading texture
-        Bitmap bitmap = getResourceBMP(context);
-
-        // generate one texture pointer
-        gl.glGenTextures(1, textures, 0);
-        // ...and bind it to our array
-        gl.glBindTexture(GL10.GL_TEXTURE_2D, textures[0]);
-
-        // create nearest filtered texture
-        gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER, GL10.GL_NEAREST);
-        gl.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, GL10.GL_LINEAR);
-
-        // Use Android GLUtils to specify a two-dimensional texture image from our bitmap
-        GLUtils.texImage2D(GL10.GL_TEXTURE_2D, 0, bitmap, 0);
-
-        // Clean up
-        bitmap.recycle();
-    }
-
-    private Bitmap getResourceBMP(Context c){
-        return BitmapFactory.decodeResource(c.getResources(), R.mipmap.ic_launcher) ;
-    }
-
 }

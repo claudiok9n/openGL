@@ -13,30 +13,34 @@ import java.util.List;
  */
 public class LoadOBJ {
     private Resources resource = null;
-    private InputStream inputStream = null;
+    private InputStream inputStream_Obj = null;
+    private InputStream inputStream_Mtl = null;
     private static List<Float> vertex = new ArrayList<Float>();
 
-    public LoadOBJ(InputStream _inputStream) {
-        inputStream = _inputStream;
+    public LoadOBJ(InputStream _obj, InputStream _mtl) {
+        inputStream_Obj = _obj;
+        inputStream_Mtl = _mtl;
         IniObject();
     }
 
     private void IniObject(){
-        openFile();
+        if(inputStream_Obj != null)
+            openFileObj();
+        if(inputStream_Mtl != null)
+            openFileMtl();
     }
 
-    private void openFile() {
-
+    private void openFileObj() {
         try{
             String str="";
             //StringBuffer buf = new StringBuffer();
-            InputStream is = inputStream;
+            InputStream is = inputStream_Obj;
             BufferedReader reader = new BufferedReader(new InputStreamReader(is));
             if (is!=null) {
                     while ((str = reader.readLine()) != null) {
                         //buf.append(str + "\n" );
 
-                        if(str.substring(0, 2).equals("v "))
+                        if(str.startsWith("v "))
                             getVertex(str);
                     }
             }
@@ -46,8 +50,28 @@ public class LoadOBJ {
         }
     }
 
+    private void openFileMtl(){
+        try{
+            String str="";
+            //StringBuffer buf = new StringBuffer();
+            InputStream is = inputStream_Mtl;
+            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+            if (is!=null) {
+                while ((str = reader.readLine()) != null) {
+                    //buf.append(str + "\n" );
+
+                    //if(str.startsWith("v "))
+                    //    getVertex(str);
+                }
+            }
+            is.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void getVertex(String _vertex){
-        String vertexTemp = _vertex.replace("v ", "");
+        String vertexTemp = _vertex.replace("v ", "").trim();
         String[] vertexArray = vertexTemp.replace(" ", ", ").split(", ");
         vertex.add(Float.valueOf(vertexArray[0]));
         vertex.add(Float.valueOf(vertexArray[1]));

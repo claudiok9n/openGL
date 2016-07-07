@@ -39,7 +39,7 @@ public class Cube {
     };
 
     public Cube(Context c) {
-        loadOBJ = new LoadOBJ(c.getResources().openRawResource(R.raw.iron_man));
+        loadOBJ = new LoadOBJ(c.getResources().openRawResource(R.raw.cube), c.getResources().openRawResource(R.raw.cube_mtl));
        List<Float> list = LoadOBJ.getObjectVertex();
         cubeCoords = new float[list.size()];
         for (int i = 0; i < list.size(); i++)

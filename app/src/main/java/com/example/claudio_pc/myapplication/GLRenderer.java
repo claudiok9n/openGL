@@ -16,9 +16,9 @@ class GlRenderer implements GLSurfaceView.Renderer {
 
     public GlRenderer(Context c){
         context = c;
-        cube = new Cube(c);
+        //cube = new Cube(c);
         //vehicle = new Vehicle();
-        //mapGenerator = new MapGenerator();
+        mapGenerator = new MapGenerator(context);
     }
 
     public void onSurfaceCreated(GL10 gl, EGLConfig configuracionEGL) {
@@ -57,24 +57,27 @@ class GlRenderer implements GLSurfaceView.Renderer {
     public void onDrawFrame(GL10 gl){
         gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
         // Replace the current matrix with the identity matrix.
-        gl.glLoadIdentity();
+        /*gl.glLoadIdentity();
 
         gl.glTranslatef(0.0f, 0.0f, -6.0f);
         gl.glScalef(0.8f, 0.8f, 0.8f);
         gl.glRotatef(rotationAngle, 1.0f, 1.0f, 1.0f);
         cube.draw(gl);
-        rotationAngle -= 0.4f;
+        rotationAngle -= 0.4f;*/
 
         /*gl.glLoadIdentity();
         gl.glTranslatef(vehicle.x, getY(), -6.0f);
         gl.glScalef(0.8f, 0.8f, 0.8f);
         gl.glRotatef(getAngleRotate(), 0.0f, 0.0f, 1.0f);
         vehicle.draw(gl);
+        */
 
         gl.glLoadIdentity();
-        gl.glTranslatef(0.0f, -2.0f, -6.0f);
-        gl.glScalef(0.6f, 0.6f, 0.6f);
-        mapGenerator.draw(gl);*/
+        gl.glTranslatef(0.0f, 0.0f, -6.0f);
+        gl.glRotatef(mAngle, 1.0f, 1.0f, 1.0f);
+        //gl.glScalef(0.6f, 0.6f, 0.6f);
+        mapGenerator.draw(gl);
+        mAngle += 0.5f;
     }
 
     public volatile float mAngle;
