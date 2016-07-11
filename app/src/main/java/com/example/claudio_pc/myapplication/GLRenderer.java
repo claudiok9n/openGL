@@ -11,14 +11,14 @@ class GlRenderer implements GLSurfaceView.Renderer {
     private static Context context;
     private Cube cube;
     private Vehicle vehicle;
-    private MapGenerator mapGenerator;
+    private ObjectMesh map;
     private float rotationAngle;
 
     public GlRenderer(Context c){
         context = c;
         //cube = new Cube(c);
         //vehicle = new Vehicle();
-        mapGenerator = new MapGenerator(context);
+        map = LoadOBJ(c.getResources().openRawResource(R.raw.cube), c.getResources().openRawResource(R.raw.cube_mtl));
     }
 
     public void onSurfaceCreated(GL10 gl, EGLConfig configuracionEGL) {

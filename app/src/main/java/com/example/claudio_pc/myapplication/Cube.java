@@ -40,10 +40,10 @@ public class Cube {
 
     public Cube(Context c) {
         loadOBJ = new LoadOBJ(c.getResources().openRawResource(R.raw.cube), c.getResources().openRawResource(R.raw.cube_mtl));
-       List<Float> list = LoadOBJ.getObjectVertex();
+       /*List<Float> list = LoadOBJ.getObjectVertex();
         cubeCoords = new float[list.size()];
         for (int i = 0; i < list.size(); i++)
-            cubeCoords[i] = list.get(i).floatValue();
+            cubeCoords[i] = list.get(i).floatValue();*/
 
         ByteBuffer byteBuffer = ByteBuffer.allocateDirect(cubeCoords.length * 4);
         byteBuffer.order(ByteOrder.nativeOrder());
