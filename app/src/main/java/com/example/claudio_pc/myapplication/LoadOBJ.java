@@ -15,49 +15,43 @@ import java.util.List;
  */
 public class LoadOBJ {
     private Resources resource = null;
-    private InputStream inputStream_Obj = null;
-    private InputStream inputStream_Mtl = null;
 
-    ArrayList<Vector3f> vertex = new ArrayList<Vector3f>();
-    ArrayList<Vector2f> TextureCoords = new ArrayList<Vector2f>();
-    ArrayList<Vector3f> Normals = new ArrayList<Vector3f>();
-    ArrayList<Face> faces = new ArrayList<Face>();
+    public static ObjectMesh load(InputStream _obj, InputStream _mtl) throws IOException {
+        InputStream inputStream_Obj = _obj;
+        InputStream inputStream_Mtl = _mtl;
+        ArrayList<Vector3f> vertex = new ArrayList<Vector3f>();
+        ArrayList<Vector2f> TextureCoords = new ArrayList<Vector2f>();
+        ArrayList<Vector3f> Normals = new ArrayList<Vector3f>();
+        ArrayList<Face> faces = new ArrayList<Face>();
 
-    public static LoadOBJ(InputStream _obj, InputStream _mtl) {
-        inputStream_Obj = _obj;
-        inputStream_Mtl = _mtl;
-        IniObject();
-    }
+        ObjectMesh objectMesh = new ObjectMesh();
 
-    private static IniObject(){
-        if(inputStream_Obj != null)
-            openFileObj();
-        if(inputStream_Mtl != null)
-            openFileMtl();
-    }
+        ArrayList<String> lines = parseOBJ(_obj, _mtl);
 
-    private static openFileObj() {
-        try{
-            String str="";
-            //StringBuffer buf = new StringBuffer();
-            InputStream is = inputStream_Obj;
-            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-            if (is!=null) {
-                    while ((str = reader.readLine()) != null) {
-                        //buf.append(str + "\n" );
+        for (String str : lines) {
+            if (str == null)
+                break;
+            if (str.startsWith("v "))
+                vertex.add(new Vector3f(Float.valueOf(str.split(" ")[1]), Float.valueOf(str.split(" ")[2]), Float.valueOf(str.split(" ")[3])));
+            if (str.startsWith("vt "))
+                TextureCoords.add(new Vector2f(Float.valueOf(str.split(" ")[1]),Float.valueOf(str.split(" ")[2])));
+            if (str.startsWith("vn "))
+                Normals.add(new Vector3f(Float.valueOf(str.split(" ")[1]), Float.valueOf(str.split(" ")[2]), Float.valueOf(str.split(" ")[3])));
+            if (str.startsWith("f ")) {
+                //Log.d("OBJToolkit", line);
+                Face f = new Face();
+                String[] faceVertexArray = str.split(" ");
 
-                        if(str.startsWith("v "))
-                            //setVertex(str);
-                            vertex.add(new Vector3f(Float.valueOf(str.split(" ")[1]), Float.valueOf(str.split(" ")[2]), Float.valueOf(str.split(" ")[3])));
-                        if(str.startsWith("vn "))
-                            Normals.add(new Vector3f(Float.valueOf(str.split(" ")[1]), Float.valueOf(str.split(" ")[2]), Float.valueOf(str.split(" ")[3])));
-                        if(str.startsWith("f "))
-                            setFace(str);
-                    }
+                for (int index = 1; index < faceVertexArray.length; index++) {
+                    String[] valueArray = faceVertexArray[index].split("/");
+
+                    if (TextureCoords.size() > 0)
+                        f.addVertex(new Vertex(vertex.get(Integer.valueOf(valueArray[0]) - 1), Normals.get(Integer.valueOf(valueArray[2]) - 1), TextureCoords.get(Integer.valueOf(valueArray[1]) - 1)));
+                    else
+                        f.addVertex(new Vertex(vertex.get(Integer.valueOf(valueArray[0]) - 1), Normals.get(Integer.valueOf(valueArray[2]) - 1), new Vector2f(0, 0)));
+                }
+                faces.add(f);
             }
-            is.close();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
 
         vertex = null;
@@ -85,18 +79,31 @@ public class LoadOBJ {
 
         faces = null;
 
-        ObjectMesh objectMesh = new ObjectMesh();
-
-        objectMesh.createBuffers(vector3fListToFloatArray(VBOVertices), integerListToShortArray(VBOIndices), null, vector2fListToFloatArray(VBOTextureCoords), vector3fListToFloatArray(VBONormals));
+        objectMesh.createBuffers(vector3fListToFloatArray(VBOVertices), integerListToShortArray(VBOIndices), null,
+                                    vector2fListToFloatArray(VBOTextureCoords), vector3fListToFloatArray(VBONormals));
 
         VBOVertices = null;
         VBONormals = null;
         VBOTextureCoords = null;
         VBOIndices = null;
 
+        return objectMesh;
     }
 
-    private void openFileMtl(){
+    private static ArrayList<String> parseOBJ(InputStream _obj, InputStream _mtln) throws IOException
+    {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(_obj));
+        ArrayList<String> lines = new ArrayList<String>();
+        while(reader.ready())
+        {
+            lines.add(reader.readLine());
+        }
+        reader.close();
+        reader = null;
+        return lines;
+    }
+
+    /*private void openFileMtl(){
         try{
             String str="";
             //StringBuffer buf = new StringBuffer();
@@ -114,7 +121,7 @@ public class LoadOBJ {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
+    }*/
 
     /*private void setVertex(String _vertex){
         String vertexTemp = _vertex.replace("v ", "").trim();
@@ -123,23 +130,6 @@ public class LoadOBJ {
         vertex.add(Float.valueOf(vertexArray[1]));
         vertex.add(Float.valueOf(vertexArray[2]));
     }*/
-
-    private void setFace(String _line){
-        //Log.d("OBJToolkit", line);
-        Face f = new Face();
-        String[] faceVertexArray = _line.split(" ");
-
-        for (int index = 1; index < faceVertexArray.length; index++)
-        {
-            String[] valueArray = faceVertexArray[index].split("/");
-
-            if (TextureCoords.size() > 0)
-                f.addVertex(new Vertex(vertex.get(Integer.valueOf(valueArray[0]) - 1), Normals.get(Integer.valueOf(valueArray[2]) - 1), TextureCoords.get(Integer.valueOf(valueArray[1]) - 1)));
-            else
-                f.addVertex(new Vertex(vertex.get(Integer.valueOf(valueArray[0]) - 1), Normals.get(Integer.valueOf(valueArray[2]) - 1), new Vector2f(0, 0)));
-        }
-        faces.add(f);
-    }
 
     /*public static List<Float> getObjectVertex(){
         return vertex;

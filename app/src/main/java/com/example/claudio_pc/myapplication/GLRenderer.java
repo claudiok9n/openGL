@@ -4,6 +4,8 @@ import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLU;
 
+import java.io.IOException;
+
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
@@ -18,7 +20,11 @@ class GlRenderer implements GLSurfaceView.Renderer {
         context = c;
         //cube = new Cube(c);
         //vehicle = new Vehicle();
-        map = LoadOBJ(c.getResources().openRawResource(R.raw.cube), c.getResources().openRawResource(R.raw.cube_mtl));
+        try {
+            map = LoadOBJ.load(c.getResources().openRawResource(R.raw.map), c.getResources().openRawResource(R.raw.cube_mtl));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void onSurfaceCreated(GL10 gl, EGLConfig configuracionEGL) {
@@ -74,10 +80,9 @@ class GlRenderer implements GLSurfaceView.Renderer {
 
         gl.glLoadIdentity();
         gl.glTranslatef(0.0f, 0.0f, -6.0f);
-        gl.glRotatef(mAngle, 1.0f, 1.0f, 1.0f);
-        //gl.glScalef(0.6f, 0.6f, 0.6f);
-        mapGenerator.draw(gl);
-        mAngle += 0.5f;
+        gl.glRotatef(0, 50.0f, 1.0f, 1.0f);
+        map.draw(gl);
+        mAngle += 0.4f;
     }
 
     public volatile float mAngle;

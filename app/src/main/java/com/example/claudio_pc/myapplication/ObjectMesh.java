@@ -63,7 +63,7 @@ public class ObjectMesh {
         gl.glRotatef(rx, 1, 0, 0);
         gl.glRotatef(ry, 0, 1, 0);
         gl.glRotatef(rz, 0, 0, 1);
-        gl.glDrawElements(GL10.GL_TRIANGLES, numOfIndices, GL10.GL_UNSIGNED_SHORT, indicesBuffer);
+        gl.glDrawElements(GL10.GL_TRIANGLE_FAN, numOfIndices, GL10.GL_UNSIGNED_SHORT, indicesBuffer);
         gl.glDisableClientState(GL10.GL_VERTEX_ARRAY);
         if (mTextureId != -1 && mTextureBuffer != null)
         {
@@ -76,7 +76,7 @@ public class ObjectMesh {
         this.bitmap = bitmap;
     }
 
-    public void createBuffers(float[] vertices, short[] indices, float[] colors, float[] textureCoords)
+    public void createBuffers(float[] vertices, short[] indices, float[] colors, float[] textureCoords, float[] normals)
     {
         Log.d("MeshCreateBuffers", "Vertices: " + floatArrayToString(vertices));
         setVertices(vertices);
