@@ -35,7 +35,7 @@ public class ObjectMesh {
         //Log.d("Mesh", "About to render mesh");
         gl.glFrontFace(GL10.GL_CCW);
         gl.glEnable(GL10.GL_CULL_FACE);
-        gl.glCullFace(GL10.GL_BACK);
+        gl.glCullFace(GL10.GL_FRONT);
         gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
         gl.glVertexPointer(3, GL10.GL_FLOAT, 0, verticesBuffer);
         gl.glColor4f(rgba[0], rgba[1], rgba[2], rgba[3]);
@@ -63,7 +63,7 @@ public class ObjectMesh {
         gl.glRotatef(rx, 1, 0, 0);
         gl.glRotatef(ry, 0, 1, 0);
         gl.glRotatef(rz, 0, 0, 1);
-        gl.glDrawElements(GL10.GL_TRIANGLE_FAN, numOfIndices, GL10.GL_UNSIGNED_SHORT, indicesBuffer);
+        gl.glDrawElements(GL10.GL_TRIANGLES, numOfIndices, GL10.GL_UNSIGNED_SHORT, indicesBuffer);
         gl.glDisableClientState(GL10.GL_VERTEX_ARRAY);
         if (mTextureId != -1 && mTextureBuffer != null)
         {

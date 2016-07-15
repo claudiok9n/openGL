@@ -19,9 +19,11 @@ class GlRenderer implements GLSurfaceView.Renderer {
     public GlRenderer(Context c){
         context = c;
         //cube = new Cube(c);
-        //vehicle = new Vehicle();
+        vehicle = new Vehicle();
         try {
             map = LoadOBJ.load(c.getResources().openRawResource(R.raw.map), c.getResources().openRawResource(R.raw.cube_mtl));
+            map.y = -2.5f;
+            map.z = -6.0f;
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -71,18 +73,19 @@ class GlRenderer implements GLSurfaceView.Renderer {
         cube.draw(gl);
         rotationAngle -= 0.4f;*/
 
-        /*gl.glLoadIdentity();
+        gl.glLoadIdentity();
         gl.glTranslatef(vehicle.x, getY(), -6.0f);
         gl.glScalef(0.8f, 0.8f, 0.8f);
-        gl.glRotatef(getAngleRotate(), 0.0f, 0.0f, 1.0f);
+        //gl.glRotatef(getAngleRotate(), 0.0f, 0.0f, 1.0f);
         vehicle.draw(gl);
-        */
+
 
         gl.glLoadIdentity();
-        gl.glTranslatef(0.0f, 0.0f, -6.0f);
-        gl.glRotatef(0, 50.0f, 1.0f, 1.0f);
+        //gl.glTranslatef(getSpeed(), -2.7f, -6.0f);
+        //gl.glRotatef(0, 1.0f, 1.0f, 1.0f);
+        map.x = getSpeed();
         map.draw(gl);
-        mAngle += 0.4f;
+        //mAngle += 0.4f;
     }
 
     public volatile float mAngle;
@@ -109,9 +112,9 @@ class GlRenderer implements GLSurfaceView.Renderer {
             return 0;
 
         if(rotate.equals("LEFT")){
-            angleRotate += 10;
+            angleRotate += 10f;
         }else if(rotate.equals("RIGHT")){
-            angleRotate += -10;
+            angleRotate -= 10f;
         }
         return angleRotate;
     }
@@ -123,12 +126,36 @@ class GlRenderer implements GLSurfaceView.Renderer {
     public float getX(){ return posX; }
     public void setY(float y){ posY = y; }
     public float getY(){
-        if(!vehicle.validateColition()) {
-            vehicle.y -= 0.05;
-            posY = vehicle.y - 0.05f;
+        if(!validateColition()) {
+            vehicle.y -= 0.04;
+            posY = vehicle.y - 0.04f;
             return posY;
         }
         return vehicle.y;
+    }
+
+    public boolean validateColition(){
+        if(vehicle.y <= map.y + 1.0f)
+            return true;
+        return false;
+    }
+
+
+    public String touchPosition;
+    public float speed;
+    public void setSpeed(String _touchPosition){
+        touchPosition = _touchPosition;
+    }
+    public float getSpeed(){
+        if (touchPosition == null)
+            return 0;
+
+        if(touchPosition.equals("LEFT")){
+            speed += 0.5f;
+        }else if(touchPosition.equals("RIGHT")){
+            speed -= 0.5f;
+        }
+        return speed;
     }
 
 }

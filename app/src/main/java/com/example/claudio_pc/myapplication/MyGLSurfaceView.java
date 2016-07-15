@@ -57,14 +57,17 @@ class MyGlSurfaceView extends GLSurfaceView {
                 if (x > 0 && x < widthMid) {
                     //mRenderer.setAngle(mRenderer.getAngle() + 6);
                     mRenderer.setRotate("LEFT");
+                    mRenderer.setSpeed("LEFT");
                 } else if (x > 0 && x < Screen.getWidth()) {
                     //mRenderer.setAngle(mRenderer.getAngle() - 6);
                     mRenderer.setRotate("RIGHT");
+                    mRenderer.setSpeed("RIGHT");
                 }
                 break;
             }
             case MotionEvent.ACTION_UP:{
                 mRenderer.setRotate("UP");
+                mRenderer.setSpeed("UP");
             break;
             }
         }

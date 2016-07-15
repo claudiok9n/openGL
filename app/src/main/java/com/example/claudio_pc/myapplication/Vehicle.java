@@ -114,10 +114,10 @@ public class Vehicle {
         return BitmapFactory.decodeResource(c.getResources(), R.mipmap.ic_launcher) ;
     }
 
-    public boolean validateColition(){
+    /*public boolean validateColition(){
         if(y <= -1.05f)
             return true;
         return false;
-    }
+    }*/
 
 }
